@@ -1,5 +1,7 @@
 package chess;
 
+import java.util.Objects;
+
 /**
  * Represents a single square position on a chess board
  * <p>
@@ -8,28 +10,39 @@ package chess;
  */
 public class ChessPosition {
 
-    int Row;
-    int Column;
+    private int Row;
+    private int Column;
 
     public ChessPosition(int row, int col) {
-        Row = row;
-        Column = col;
-
+        this.Row = row;
+        this.Column = col;
     }
-
     /**
      * @return which row this position is in
      * 1 codes for the bottom row
      */
     public int getRow() {
-        return this.Row;
+        return Row;
     }
-
     /**
      * @return which column this position is in
      * 1 codes for the left column
      */
     public int getColumn() {
-        return this.Column;
+        return Column;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        ChessPosition that = (ChessPosition) o;
+        return getRow() == that.getRow() && getColumn() == that.getColumn();
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getRow(), getColumn());
     }
 }
