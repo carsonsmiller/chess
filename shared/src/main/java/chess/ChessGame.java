@@ -223,7 +223,7 @@ public class ChessGame {
         }
         return true;
     }
-
+    //rip
     /**
      * Sets this game's chessboard to a given board
      *
@@ -250,7 +250,7 @@ public class ChessGame {
         ChessGame chessGame = (ChessGame) o;
         return Objects.equals(getBoard(), chessGame.getBoard()) && getTeamTurn() == chessGame.getTeamTurn();
     }
-
+    //hashcode
     @Override
     public int hashCode() {
         return Objects.hash(getBoard(), getTeamTurn());
