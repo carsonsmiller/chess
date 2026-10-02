@@ -148,7 +148,7 @@ public class ChessGame {
             return false;
         }
 
-        TeamColor opponent;
+        TeamColor opponent; //team selection
         if (teamColor == TeamColor.WHITE) {
             opponent = TeamColor.BLACK;
         } else {
