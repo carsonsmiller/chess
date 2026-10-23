@@ -50,7 +50,8 @@ public class Server {
         javalin.delete("/db", ctx -> { clearService.clear(); ctx.status(200).result("{}"); });
         javalin.post("/user", ctx -> {
            UserRequest req = body(ctx.body(), UserRequest.class);
-           AuthData result = userService.register(req == null ? null : req.username(), req == null ? null : req.password(), req == null ? null : req.email());
+           AuthData result = userService.register(req == null ? null : req.username(),
+                   req == null ? null : req.password(), req == null ? null : req.email());
            ctx.status(200).json(result);
         });
         javalin.post("/session", ctx -> {
@@ -61,7 +62,8 @@ public class Server {
         javalin.delete("/session", ctx -> {userService.logout(ctx.header("authorization")); ctx.status(200).result("{}"); });
         javalin.get("/game", ctx -> {
             List<GameData> games = gameService.listGames(ctx.header("authorization"));
-            List<GameSummary> summaries = games.stream().map(g -> new GameSummary(g.gameID(), g.whiteUsername(), g.blackUsername(), g.gameName())).toList();
+            List<GameSummary> summaries = games.stream().map(g ->
+                    new GameSummary(g.gameID(), g.whiteUsername(), g.blackUsername(), g.gameName())).toList();
             ctx.status(200).json(new GamesResult(summaries));
         });
         javalin.post("/game", ctx -> {
@@ -71,7 +73,9 @@ public class Server {
         });
         javalin.put("/game", ctx-> {
             JoinGameRequest req = body(ctx.body(), JoinGameRequest.class);
-            if (req == null || req.gameID() == null) throw new ServiceException(400, "Error: bad request");
+            if (req == null || req.gameID() == null) {
+                throw new ServiceException(400, "Error: bad request");
+            }
             gameService.joinGame(ctx.header("authorization"), req.playerColor(), req.gameID());
             ctx.status(200).result("{}");
         });
