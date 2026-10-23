@@ -16,12 +16,32 @@ public class GameService {
         AuthData auth=users.requireAuth(token);
         if (color == null || !(color.equals("WHITE") || color.equals("BLACK")) || gameID <= 0) throw new ServiceException(400, "Error: bad request");
         GameData game = games.getGame(gameID);
+
+        if (game == null) {
+            throw new ServiceException(400, "Error: bad request");
+        }
+
         if (color.equals("WHITE")) {
-            if (game.whiteUsername() != null) throw new ServiceException(403, "Error: already taken");
-            games.updateGame(new GameData(game.gameID(), auth.username(), game.blackUsername(), game.gameName(), game.game()));
+            if (game.whiteUsername() != null) {
+                throw new ServiceException(403, "Error: already taken");
+            }
+            games.updateGame(new GameData(
+                    game.gameID(),
+                    auth.username(),
+                    game.blackUsername(),
+                    game.gameName(),
+                    game.game()
+            ));
         } else {
-            if (game.blackUsername() != null) throw new ServiceException(403, "Error: already taken");
-            games.updateGame(new GameData(game.gameID(), auth.username(), game.whiteUsername(), game.gameName(), game.game()));
+            if (game.blackUsername() != null) {
+                throw new ServiceException(403, "Error: already taken");
+            }
+            games.updateGame(new GameData(game.gameID(),
+                    game.whiteUsername(),
+                    auth.username(),
+                    game.gameName(),
+                    game.game()
+            ));
         }
     }
 }
