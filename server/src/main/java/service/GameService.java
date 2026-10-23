@@ -9,12 +9,16 @@ public class GameService {
     public GameService(GameDAO games, UserService users) {this.games=games; this.users=users;}
     public List<GameData> listGames(String token) throws DataAccessException, ServiceException { users.requireAuth(token); return games.listGames();}
     public int createGame(String token, String gameName) throws DataAccessException, ServiceException {
-        users.requireAuth(token); if (gameName == null || gameName.isBlank()) throw new ServiceException(400, "Error: bad request");
+        users.requireAuth(token); if (gameName == null || gameName.isBlank()) {
+            throw new ServiceException(400, "Error: bad request");
+        }
         return games.createGame(gameName).gameID();
     }
     public void joinGame(String token, String color, int gameID) throws DataAccessException, ServiceException {
         AuthData auth=users.requireAuth(token);
-        if (color == null || !(color.equals("WHITE") || color.equals("BLACK")) || gameID <= 0) throw new ServiceException(400, "Error: bad request");
+        if (color == null || !(color.equals("WHITE") || color.equals("BLACK")) || gameID <= 0) {
+            throw new ServiceException(400, "Error: bad request");
+        }
         GameData game = games.getGame(gameID);
 
         if (game == null) {
