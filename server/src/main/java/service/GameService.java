@@ -15,12 +15,13 @@ public class GameService {
     public void joinGame(String token, String color, int gameID) throws DataAccessException, ServiceException {
         AuthData auth=users.requireAuth(token);
         if (color == null || !(color.equals("WHITE") || color.equals("BLACK")) || gameID <= 0) throw new ServiceException(400, "Error: bad request");
+        GameData game = games.getGame(gameID);
         if (color.equals("WHITE")) {
             if (game.whiteUsername() != null) throw new ServiceException(403, "Error: already taken");
-            games.updateGame(new GameData(game.gameID(), auth.username(), game.blackusername(), game.gameName(), game.game()));
+            games.updateGame(new GameData(game.gameID(), auth.username(), game.blackUsername(), game.gameName(), game.game()));
         } else {
             if (game.blackUsername() != null) throw new ServiceException(403, "Error: already taken");
-            games.updateGame(new GameData(game.gameID(), auth.username(), game.blackusername(), game.gameName(), game.game()));
+            games.updateGame(new GameData(game.gameID(), auth.username(), game.whiteUsername(), game.gameName(), game.game()));
         }
     }
 }

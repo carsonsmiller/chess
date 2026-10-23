@@ -14,13 +14,13 @@ public class UserService {
         return newAuth(username);
     }
     public AuthData login(String username, String password) throws DataAccessException, ServiceException {
-        if (blank(username) || blank(password)) throw new ServiceException(400, "Error: Bad request");
+        if (blank(username) || blank(password)) throw new ServiceException(400, "Error: bad request");
         UserData user=users.getUser(username);
         if (user == null || !user.password().equals(password)) throw new ServiceException(401, "Error: Unauthorized");
         return newAuth(username);
     }
     public void logout(String token) throws DataAccessException, ServiceException {
-        if (token == null || auths.getAuth(token) == null) throw new ServiceException(401, "Error: unauthorized");
+        if (token == null || auths.getAuth(token) == null) throw new ServiceException(401, "Error: Unauthorized");
         auths.deleteAuth(token);
     }
     public AuthData requireAuth(String token) throws DataAccessException, ServiceException {
