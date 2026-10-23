@@ -8,6 +8,8 @@ import model.*;
 import service.*;
 import java.util.*;
 import com.google.gson.JsonParseException;
+import io.javalin.json.JsonMapper;
+import java.lang.reflect.Type;
 
 public class Server {
 
@@ -21,7 +23,18 @@ public class Server {
     private final ClearService clearService = new ClearService(userDAO, gameDAO, authDAO);
 
     public Server() {
-        javalin = Javalin.create(config -> config.staticFiles.add("web"));
+        javalin = Javalin.create(config -> {
+            config.staticFiles.add("web");
+
+            config.jsonMapper(new JsonMapper() {
+                @Override public String toJsonString(Object obj, Type type) {
+                    return gson.toJson(obj,type);
+                }
+                @Override public <T> T fromJsonString(String json, Type targetType) {
+                    return gson.fromJson(json,targetType);
+                }
+            });
+        });
         javalin.exception(ServiceException.class, (e, ctx) -> error(ctx, e.statusCode(), e.getMessage()));
         javalin.exception(Exception.class, (e, ctx) -> {
             if (e instanceof DataAccessException) error(ctx, 500, "Error: " + safeMessage(e));
