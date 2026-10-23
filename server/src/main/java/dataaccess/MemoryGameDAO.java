@@ -7,6 +7,10 @@ import java.util.*;
 public class MemoryGameDAO implements GameDAO {
     private final Map<Integer, GameData> games = new LinkedHashMap<>();
     private int nextID = 1;
+    @Override public synchronized void clear() {
+        games.clear();
+        nextID = 1;
+    }
     @Override public synchronized GameData createGame(String gameName) throws DataAccessException {
         if (gameName == null || gameName.isBlank()) throw new DataAccessException("Invalid game name");
         GameData game = new GameData(nextID++, null, null, gameName, new ChessGame());

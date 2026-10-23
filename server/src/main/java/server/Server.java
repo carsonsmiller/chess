@@ -42,7 +42,7 @@ public class Server {
         javalin.delete("/session", ctx -> {userService.logout(ctx.header("authorization")); ctx.status(200).result("{}"); });
         javalin.get("/game", ctx -> {
             List<GameData> games = gameService.listGames(ctx.header("authorization"));
-            List<GameSummary> summaries = games.stream().map(g -> new GameSummary(g.gameID(), g.whiteUsername, g.blackUsername(), g.gamename())).toList();
+            List<GameSummary> summaries = games.stream().map(g -> new GameSummary(g.gameID(), g.whiteUsername(), g.blackUsername(), g.gameName())).toList();
             ctx.status(200).json(new GamesResult(summaries));
         });
         javalin.post("/game", ctx -> {
@@ -52,8 +52,8 @@ public class Server {
         });
         javalin.put("/game", ctx-> {
             JoinGameRequest req = body(ctx.body(), JoinGameRequest.class);
-            if (req == null || req.game(ID) == null) throw new ServiceException(400, "Error: bad request");
-            gameService.joinGame(ctx.header("authorization"), req.playerColor(), rep.gameID());
+            if (req == null || req.gameID() == null) throw new ServiceException(400, "Error: bad request");
+            gameService.joinGame(ctx.header("authorization"), req.playerColor(), req.gameID());
             ctx.status(200).result("{}");
         });
         // Register your endpoints and exception handlers here.
@@ -80,7 +80,7 @@ public class Server {
         return e.getMessage() == null ? "internal error" : e.getMessage();
     }
     private record UserRequest(String username, String password, String email) {}
-    private record CreateGameRequest(String gamename) {}
+    private record CreateGameRequest(String gameName) {}
     private record JoinGameRequest(String playerColor, Integer gameID) {}
     private record CreateGameResult(int gameID) {}
     private record GameSummary(int gameID, String whiteUsername, String blackUsername, String gameName) {}
