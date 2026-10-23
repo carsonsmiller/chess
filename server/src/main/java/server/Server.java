@@ -37,9 +37,15 @@ public class Server {
         });
         javalin.exception(ServiceException.class, (e, ctx) -> error(ctx, e.statusCode(), e.getMessage()));
         javalin.exception(Exception.class, (e, ctx) -> {
-            if (e instanceof DataAccessException) error(ctx, 500, "Error: " + safeMessage(e));
-            else if (e instanceof JsonParseException || e instanceof IllegalStateException) error(ctx, 400, "Error: bad request");
-            else error(ctx, 500, "Error: " + safeMessage(e));
+            if (e instanceof DataAccessException) {
+                error(ctx, 500, "Error: " + safeMessage(e));
+            }
+            else if (e instanceof JsonParseException || e instanceof IllegalStateException) {
+                error(ctx, 400, "Error: bad request");
+            }
+            else {
+                error(ctx, 500, "Error: " + safeMessage(e));
+            }
         });
         javalin.delete("/db", ctx -> { clearService.clear(); ctx.status(200).result("{}"); });
         javalin.post("/user", ctx -> {
@@ -80,7 +86,9 @@ public class Server {
         javalin.stop();
     }
     private <T> T body(String json, Class<T> type) throws ServiceException {
-        if (json == null || json.isBlank()) throw new ServiceException(400, "Error: bad request");
+        if (json == null || json.isBlank()) {
+            throw new ServiceException(400, "Error: bad request");
+        }
         try {return gson.fromJson(json, type); } catch (JsonParseException | IllegalStateException e) {
             throw new ServiceException(400, "Error: bad request");
         }

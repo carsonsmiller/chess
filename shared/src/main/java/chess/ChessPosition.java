@@ -10,26 +10,26 @@ import java.util.Objects;
  */
 public class ChessPosition {
 
-    private int Row;
-    private int Column;
+    private int row;
+    private int column;
 
     public ChessPosition(int row, int col) {
-        this.Row = row;
-        this.Column = col;
+        this.row = row;
+        this.column = col;
     }
     /**
      * @return which row this position is in
      * 1 codes for the bottom row
      */
     public int getRow() {
-        return Row;
+        return row;
     }
     /**
      * @return which column this position is in
      * 1 codes for the left column
      */
     public int getColumn() {
-        return Column;
+        return column;
     }
 
     @Override

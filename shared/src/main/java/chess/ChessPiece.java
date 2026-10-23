@@ -12,12 +12,12 @@ import java.util.ArrayList;
  */
 public class ChessPiece {
 
-    private ChessGame.TeamColor Color;
-    private PieceType Type;
+    private ChessGame.TeamColor color;
+    private PieceType type;
 
     public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
-        this.Color = pieceColor;
-        this.Type = type;
+        this.color = pieceColor;
+        this.type = type;
     }
 
     /**
@@ -36,14 +36,14 @@ public class ChessPiece {
      * @return Which team this chess piece belongs to
      */
     public ChessGame.TeamColor getTeamColor() {
-        return Color;
+        return color;
     }
 
     /**
      * @return which type of chess piece this piece is
      */
     public PieceType getPieceType() {
-        return Type;
+        return type;
     }
 
     /**
@@ -59,7 +59,7 @@ public class ChessPiece {
         int row = myPosition.getRow();
         int column = myPosition.getColumn();
 
-        switch (Type) {
+        switch (type) {
             case KING:
                 addKingMoves(moves, board, myPosition, row, column);
                 break;
@@ -159,7 +159,8 @@ public class ChessPiece {
             if (board.getPiece(oneForward) == null) {
                 addPawnMove(moves, start, oneForward);
 
-                boolean onStartingRow = (getTeamColor() == ChessGame.TeamColor.WHITE && row == 2) || (getTeamColor() == ChessGame.TeamColor.BLACK && row == 7);
+                boolean onStartingRow = (getTeamColor() == ChessGame.TeamColor.WHITE && row == 2) ||
+                        (getTeamColor() == ChessGame.TeamColor.BLACK && row == 7);
 
                 int twoForwardRow = row + 2 * direction;
 
@@ -223,11 +224,11 @@ public class ChessPiece {
             return false;
         }
         ChessPiece that = (ChessPiece) o;
-        return Color == that.Color && Type == that.Type;
+        return color == that.color && type == that.type;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(Color, Type);
+        return Objects.hash(color, type);
     }
 }
