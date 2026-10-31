@@ -19,11 +19,17 @@ public class DatabaseManager {
     /**
      * Creates the database if it does not already exist.
      */
-    static public void createDatabase() throws DataAccessException {
-        var statement = "CREATE DATABASE IF NOT EXISTS " + databaseName;
-        try (var conn = DriverManager.getConnection(connectionUrl, dbUsername, dbPassword);
-             var preparedStatement = conn.prepareStatement(statement)) {
-            preparedStatement.executeUpdate();
+    public static void createDatabase() throws DataAccessException {
+        if (databaseName == null || !databaseName.matches("[A-Za-z0-9_]+")) {
+            throw new DataAccessException("invalid database name");
+        }
+
+        String sql = "CREATE DATABASE IF NOT EXISTS '" + databaseName + "'";
+
+        try (var conn = DriverManager.getConnection(
+                connectionUrl, dbUsername, dbPassword);
+             var statement = conn.createStatement()) {
+            statement.executeUpdate(sql);
         } catch (SQLException ex) {
             throw new DataAccessException("failed to create database", ex);
         }
@@ -42,11 +48,22 @@ public class DatabaseManager {
      * </code>
      */
     public static Connection getConnection() throws DataAccessException {
+        Connection conn = null;
+
         try {
-            var conn = DriverManager.getConnection(connectionUrl, dbUsername, dbPassword);
+            conn = DriverManager.getConnection(
+                    connectionUrl, dbUsername, dbPassword);
             conn.setCatalog(databaseName);
             return conn;
         } catch (SQLException ex) {
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException closeException) {
+                    ex.addSuppressed(closeException);
+                }
+            }
+
             throw new DataAccessException("failed to get connection", ex);
         }
     }

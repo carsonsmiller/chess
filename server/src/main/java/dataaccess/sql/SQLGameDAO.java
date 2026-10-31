@@ -18,8 +18,8 @@ public class SQLGameDAO implements GameDAO {
 
     @Override
     public void clear() throws DataAccessException {
-        String sql = "Delete from 'Game'";
-        try (var conn = DataBaseManager.getConnection();
+        String sql = "Delete from `Game`";
+        try (var conn = DatabaseManager.getConnection();
              var statement = conn.prepareStatement(sql)) {
             statement.executeUpdate();
         } catch (SQLException ex) {
@@ -34,7 +34,7 @@ public class SQLGameDAO implements GameDAO {
         }
 
         ChessGame game = new ChessGame();
-        String sql = "INSERT INTO 'Game' (whiteUsername, blackUsername, gameName, game) "
+        String sql = "INSERT INTO `Game` (whiteUsername, blackUsername, gameName, game) "
                 + "VALUES (NULL, NULL, ?, ?)";
 
         try (var conn = DatabaseManager.getConnection();
@@ -72,10 +72,10 @@ public class SQLGameDAO implements GameDAO {
     @Override
     public List<GameData> listGames() throws DataAccessException {
         String sql = "SELECT gameID, whiteUsername, blackUsername, gameName, game "
-                + "FROM 'Game' ORDER BY gameID";
+                + "FROM `Game` ORDER BY gameID";
         List<GameData> games = new ArrayList<>();
 
-        try (var conn = DataBaseManager.getConnection();
+        try (var conn = DatabaseManager.getConnection();
              var statement = conn.prepareStatement(sql);
              var result = statement.executeQuery()) {
             while (result.next()) {
@@ -87,12 +87,12 @@ public class SQLGameDAO implements GameDAO {
         }
     }
 
-    public void updateGame(GameData game throws DataAccessException {
+    public void updateGame(GameData game) throws DataAccessException {
         if (game == null || game.gameID() <= 0 || game.gameName() == null || game.game() == null) {
             throw new DataAccessException("invalid game");
         }
 
-        String sql = "UPDATE 'Game' SET whiteUsername = ?, blackUsername = ?, "
+        String sql = "UPDATE `Game` SET whiteUsername = ?, blackUsername = ?, "
                 + "gameName = ?, game = ? WHERE gameID = ?";
         try (var conn = DatabaseManager.getConnection();
              var statement = conn.prepareStatement(sql)) {

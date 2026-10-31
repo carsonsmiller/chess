@@ -24,45 +24,45 @@ public class SQLDatabase {
 
     private static void createUserTable(Statement statement) throws SQLException {
         var sql = """
-                CREATE TABLE IF NOT EXISTS 'User' (
+                CREATE TABLE IF NOT EXISTS `User` (
                     username VARCHAR(256) NOT NULL,
                     password VARCHAR(256) NOT NULL,
                     email VARCHAR(256) NOT NULL,
                     PRIMARY KEY (username)
-                )
+                ) ENGINE=InnoDB
                 """;
         statement.executeUpdate(sql);
     }
 
     private static void createAuthTable(Statement statement) throws SQLException {
         var sql = """
-                CREATE TABLE IF NOT EXISTS 'User' (
+                CREATE TABLE IF NOT EXISTS `User` (
                     authToken VARCHAR(256) NOT NULL,
                     username VARCHAR(256) NOT NULL,
                     PRIMARY KEY (authToken),
                     FOREIGN KEY (username)
-                        REFERENCES 'User'(username)
+                        REFERENCES `User`(username)
                         ON DELETE CASCADE
-                )
+                ) ENGINE=InnoDB
                 """;
         statement.executeUpdate(sql);
     }
 
     private static void createGameTable(Statement statement) throws SQLException {
         var sql = """
-                CREATE TABLE IF NOT EXISTS 'User' (
+                CREATE TABLE IF NOT EXISTS `Game` (
                     gameID INT NOT NULL AUTO_INCREMENT,
                     whiteUsername VARCHAR(256),
                     blackUsername VARCHAR(256),
                     gameName VARCHAR(256) NOT NULL,
                     PRIMARY KEY (gameID),
                     FOREIGN KEY (whiteUsername)
-                        REFERENCES 'User'(username)
+                        REFERENCES `User`(username)
                         ON DELETE SET NULL,
                     FOREIGN KEY (blackUsername)
-                        REFERENCES 'User'(username)
-                        ON DELETE SET NULL,
-                )
+                        REFERENCES `User`(username)
+                        ON DELETE SET NULL
+                ) ENGINE=InnoDB
                 """;
         statement.executeUpdate(sql);
     }

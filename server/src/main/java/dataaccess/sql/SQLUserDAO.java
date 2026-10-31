@@ -12,7 +12,7 @@ public class SQLUserDAO implements UserDAO {
 
     @Override
     public void clear() throws DataAccessException {
-        String sql = "DELETE FROM 'User'";
+        String sql = "DELETE FROM `User`";
         try (var conn = DatabaseManager.getConnection();
              var statement = conn.prepareStatement(sql)) {
             statement.executeUpdate();
@@ -28,10 +28,10 @@ public class SQLUserDAO implements UserDAO {
         }
 
         String hashedPassword = BCrypt.hashpw(user.password(), BCrypt.gensalt());
-        String sql = "INSERT INTO 'User' (username, password, email) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO `User` (username, password, email) VALUES (?, ?, ?)";
 
         try (var conn = DatabaseManager.getConnection();
-             var statement = conn.pepareStatement(sql)) {
+             var statement = conn.prepareStatement(sql)) {
             statement.setString(1, user.username());
             statement.setString(2, hashedPassword);
             statement.setString(3, user.email());
@@ -47,7 +47,7 @@ public class SQLUserDAO implements UserDAO {
             return null;
         }
 
-        String sql = "SELECT username, password, email FROM 'User' WHERE username = ?";
+        String sql = "SELECT username, password, email FROM `User` WHERE username = ?";
         try (var conn = DatabaseManager.getConnection();
              var statement = conn.prepareStatement(sql)) {
             statement.setString(1, username);

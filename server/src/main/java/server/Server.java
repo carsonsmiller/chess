@@ -1,6 +1,5 @@
 package server;
 
-import com.google.gson.JsonSyntaxException;
 import io.javalin.*;
 import com.google.gson.Gson;
 import dataaccess.*;
@@ -88,7 +87,6 @@ public class Server {
             gameService.joinGame(ctx.header("authorization"), req.playerColor(), req.gameID());
             ctx.status(200).result("{}");
         });
-        // Register your endpoints and exception handlers here.
     }
 
     public int run(int desiredPort) {

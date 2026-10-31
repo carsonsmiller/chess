@@ -11,7 +11,7 @@ public class SQLAuthDAO implements AuthDAO {
 
     @Override
     public void clear() throws DataAccessException {
-        String sql = "DELETE FROM 'Auth'";
+        String sql = "DELETE FROM `Auth`";
         try (var conn = DatabaseManager.getConnection();
              var statement = conn.prepareStatement(sql)) {
             statement.executeUpdate();
@@ -26,7 +26,7 @@ public class SQLAuthDAO implements AuthDAO {
             throw new DataAccessException("invalid auth data");
         }
 
-        String sql = "INSERT INTO 'Auth' (authToken, username) VALUES (?, ?)";
+        String sql = "INSERT INTO `Auth` (authToken, username) VALUES (?, ?)";
         try (var conn = DatabaseManager.getConnection();
              var statement = conn.prepareStatement(sql)) {
             statement.setString(1, auth.authToken());
@@ -43,7 +43,7 @@ public class SQLAuthDAO implements AuthDAO {
             return null;
         }
 
-        String sql = "SELECT authToken, username FROM 'Auth' WHERE authToken = ?";
+        String sql = "SELECT authToken, username FROM `Auth` WHERE authToken = ?";
         try (var conn = DatabaseManager.getConnection();
              var statement = conn.prepareStatement(sql)) {
             statement.setString(1, authToken);
@@ -64,7 +64,7 @@ public class SQLAuthDAO implements AuthDAO {
             throw new DataAccessException("auth token not found");
         }
 
-        String sql = "DELETE FROM 'Auth' WHERE authToken = ?";
+        String sql = "DELETE FROM `Auth` WHERE authToken = ?";
         try (var conn = DatabaseManager.getConnection();
              var statement = conn.prepareStatement(sql)) {
             statement.setString(1, authToken);
