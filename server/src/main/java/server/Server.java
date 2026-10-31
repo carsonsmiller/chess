@@ -10,19 +10,28 @@ import java.util.*;
 import com.google.gson.JsonParseException;
 import io.javalin.json.JsonMapper;
 import java.lang.reflect.Type;
+import dataaccess.sql.SQLAuthDAO;
+import dataaccess.sql.SQLGameDAO;
+import dataaccess.sql.SQLUserDAO;
+import dataaccess.sql.SQLDatabase;
 
 public class Server {
 
     private final Javalin javalin;
     private final Gson gson = new Gson();
-    private final UserDAO userDAO = new MemoryUserDAO();
-    private final GameDAO gameDAO = new MemoryGameDAO();
-    private final AuthDAO authDAO = new MemoryAuthDAO();
+    private final UserDAO userDAO = new SQLUserDAO();
+    private final GameDAO gameDAO = new SQLGameDAO();
+    private final AuthDAO authDAO = new SQLAuthDAO();
     private final UserService userService = new UserService(userDAO, authDAO);
     private final GameService gameService = new GameService(gameDAO, userService);
     private final ClearService clearService = new ClearService(userDAO, gameDAO, authDAO);
 
     public Server() {
+        try {
+            SQLDatabase.configureDatabase();
+        } catch (DataAccessException ex) {
+            throw new IllegalStateException("Error: unable to initialize database", ex);
+        }
         javalin = Javalin.create(config -> {
             config.staticFiles.add("web");
 

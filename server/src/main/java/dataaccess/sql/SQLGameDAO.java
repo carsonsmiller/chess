@@ -8,7 +8,6 @@ import dataaccess.DatabaseManager;
 import dataaccess.GameDAO;
 import model.GameData;
 
-import javax.xml.crypto.Data;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -88,6 +87,41 @@ public class SQLGameDAO implements GameDAO {
         }
     }
 
-    public void updateGame(gGameData game throws DataAccessException {
-        if (game == null || game.gameID( <= 0 || game.gaem)
+    public void updateGame(GameData game throws DataAccessException {
+        if (game == null || game.gameID() <= 0 || game.gameName() == null || game.game() == null) {
+            throw new DataAccessException("invalid game");
+        }
+
+        String sql = "UPDATE 'Game' SET whiteUsername = ?, blackUsername = ?, "
+                + "gameName = ?, game = ? WHERE gameID = ?";
+        try (var conn = DatabaseManager.getConnection();
+             var statement = conn.prepareStatement(sql)) {
+            statement.setString(1, game.whiteUsername());
+            statement.setString(2, game.blackUsername());
+            statement.setString(3, game.gameName());
+            statement.setString(4, gson.toJson(game.game()));
+            statement.setInt(5, game.gameID());
+
+            if (statement.executeUpdate() == 0) {
+                throw new DataAccessException("game not found");
+            }
+        } catch (SQLException ex) {
+            throw new DataAccessException("failed to update game", ex);
+        }
+    }
+
+    private GameData readGame(java.sql.ResultSet result) throws SQLException {
+        String json = result.getString("game");
+        ChessGame chessGame = gson.fromJson(json, ChessGame.class);
+        if (chessGame == null) {
+            throw new JsonParseException("stored game JSON was empty");
+        }
+
+        return new GameData(
+                result.getInt("gameID"),
+                result.getString("whiteUsername"),
+                result.getString("blackUsername"),
+                result.getString("gameName"),
+                chessGame);
+    }
 }
