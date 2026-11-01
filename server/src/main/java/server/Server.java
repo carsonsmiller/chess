@@ -55,7 +55,7 @@ public class Server {
                 error(ctx, 500, "Error: " + safeMessage(e));
             }
         });
-        javalin.delete("/db", ctx -> { clearService.clear(); ctx.status(200).result("{}"); });
+        javalin.delete("/db", ctx -> { clearService.clear(); ctx.status(200).json(Map.of()); });
         javalin.post("/user", ctx -> {
            UserRequest req = body(ctx.body(), UserRequest.class);
            AuthData result = userService.register(req == null ? null : req.username(),
@@ -67,7 +67,7 @@ public class Server {
            AuthData result = userService.login(req == null ? null : req.username(), req == null ? null : req.password());
            ctx.status(200).json(result);
         });
-        javalin.delete("/session", ctx -> {userService.logout(ctx.header("authorization")); ctx.status(200).result("{}"); });
+        javalin.delete("/session", ctx -> {userService.logout(ctx.header("authorization")); ctx.status(200).json(Map.of()); });
         javalin.get("/game", ctx -> {
             List<GameData> games = gameService.listGames(ctx.header("authorization"));
             List<GameSummary> summaries = games.stream().map(g ->
@@ -85,7 +85,7 @@ public class Server {
                 throw new ServiceException(400, "Error: bad request");
             }
             gameService.joinGame(ctx.header("authorization"), req.playerColor(), req.gameID());
-            ctx.status(200).result("{}");
+            ctx.status(200).json(Map.of());
         });
     }
 

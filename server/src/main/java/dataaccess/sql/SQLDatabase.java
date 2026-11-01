@@ -36,7 +36,7 @@ public class SQLDatabase {
 
     private static void createAuthTable(Statement statement) throws SQLException {
         var sql = """
-                CREATE TABLE IF NOT EXISTS `User` (
+                CREATE TABLE IF NOT EXISTS `Auth` (
                     authToken VARCHAR(256) NOT NULL,
                     username VARCHAR(256) NOT NULL,
                     PRIMARY KEY (authToken),

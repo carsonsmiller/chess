@@ -24,7 +24,7 @@ public class DatabaseManager {
             throw new DataAccessException("invalid database name");
         }
 
-        String sql = "CREATE DATABASE IF NOT EXISTS '" + databaseName + "'";
+        String sql = "CREATE DATABASE IF NOT EXISTS `" + databaseName + "`";
 
         try (var conn = DriverManager.getConnection(
                 connectionUrl, dbUsername, dbPassword);
