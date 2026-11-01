@@ -19,7 +19,7 @@ public class UserService {
         if (users.getUser(username) != null) {
             throw new ServiceException(403, "Error: already taken");
         }
-        String hashedPassword = BCrypt.haspw(password, BCrypt.gensalt());
+        String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
         users.createUser(new UserData(username, hashedPassword, email));
         return newAuth(username);
     }
