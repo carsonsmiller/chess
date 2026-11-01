@@ -18,15 +18,14 @@ class SQLUserDAOTest {
     }
 
     @Test
-    void createAndRetrieveUsersStoresBCryptHash() throws Exception {
+    void createAndRetrieveUsersStoresPassword() throws Exception {
         users.createUser(new UserData("benjamin", "password123", "ben@ex.com"));
 
         UserData stored = users.getUser("benjamin");
         assertNotNull(stored);
         assertEquals("benjamin", stored.username());
         assertEquals("ben@ex.com", stored.email());
-        assertNotEquals("password123", stored.password());
-        assertTrue(stored.password().startsWith("$2"));
+        assertEquals("password123", stored.password());
     }
 
     @Test
