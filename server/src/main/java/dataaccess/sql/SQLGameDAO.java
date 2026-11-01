@@ -53,11 +53,11 @@ public class SQLGameDAO implements GameDAO {
             throw new DataAccessException("failed to create game", ex);
         }
     }
-    
+
     @Override
     public GameData getGame(int gameID) throws DataAccessException {
         String sql = "SELECT gameID, whiteUsername, blackUsername, gameName, game "
-                + "FROM 'Game' WHERE gameID = ?";
+                + "FROM `Game` WHERE gameID = ?";
         try (var conn = DatabaseManager.getConnection();
              var statement = conn.prepareStatement(sql)) {
             statement.setInt(1, gameID);

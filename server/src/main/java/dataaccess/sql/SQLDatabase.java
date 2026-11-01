@@ -55,6 +55,7 @@ public class SQLDatabase {
                     whiteUsername VARCHAR(256),
                     blackUsername VARCHAR(256),
                     gameName VARCHAR(256) NOT NULL,
+                    game TEXT NOT NULL,
                     PRIMARY KEY (gameID),
                     FOREIGN KEY (whiteUsername)
                         REFERENCES `User`(username)
