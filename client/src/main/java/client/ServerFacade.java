@@ -71,7 +71,7 @@ public class ServerFacade {
     }
 
     public int createGame(String authToken, String gameName) throws ServerFacadeException {
-        send("POST", "/game", requireText(authToken, "Authentication"), Map.of(
+        CreateGameResult result = send("POST", "/game", requireText(authToken, "Authentication"), Map.of(
                 "gameName", requireText(gameName, "Game name")),
                 CreateGameResult.class);
         if (result == null || result.gameID() <= 0) {
