@@ -12,6 +12,4 @@ public class ChessClient {
     private final ChessBoardPrinter boardPrinter;
     private AuthData currentUser;
     private List<ServerFacade.GameInfo> displayedGames = new ArrayList<>();
-
-
 }

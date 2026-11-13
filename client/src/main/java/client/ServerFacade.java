@@ -100,7 +100,41 @@ public class ServerFacade {
     //this send will suck
     private <T> T send(String method, String path, String authToken, Object body, Class<T> responseType)
         throws ServerFacadeException {
-        //to be implemented
-        return null;
+                HttpRequest.Builder builder = HttpRequest.newBuilder()
+                .uri(URI.create(serverUrl + path))
+                        .timeout(Duration.ofSeconds(10))
+                        .header("Accept", "application/json");
+                if (authToken != null) {
+                    builder.header("authorization", authToken);
+                }
+                if (body != null) {
+                    builder.header("Content-Type", "application/json").build()
+                            .method(method, HttpRequest.BodyPublisher.ofString(gson.toJson(body)));
+                } else {
+                    builder.method(method, HttpRequest.BodyPublishers.noBody());
+                }
+
+                final HttpResponse<String> response;
+                try {
+                    response = httpClient.send(builder.build(), HttpResponse.BodyHandlers.ofString());
+                } catch (InterruptedException ex) {
+                    Thread.currentThread().interrupt();
+                    throw new ServerFacadeException("The request was interrupted. Try again", ex);
+                } catch (IOException | IllegalArgumentException ex) {
+                    throw new ServerFacadeException("Unable to reach the Chess server. Make sure it is running.", ex);
+                }
+
+                if (response.statusCode() < 200 || response.statusCode() >= 300) {
+                    throw new ServerFacadeException(errorMessage(response), response.statusCode());
+                }
+                if (responseType == null || responseType == EmptyResult.class || response.body() == null
+                || response.body().isBlank()) {
+                    return null;
+                }
+                try {
+                    return gson.fromJson(response.body(), responseType);
+                } catch (JsonParseException ex) {
+                    throw new ServerFacadeException("The server returned an unexpected response.", ex);
+                }
     }
  }
