@@ -13,6 +13,7 @@ public class ChessClient {
     private final ChessBoardPrinter boardPrinter;
     private AuthData currentUser;
     private List<ServerFacade.GameInfo> displayedGames = new ArrayList<>();
+    private boolean running = true;
 
     public ChessClient(ServerFacade server, Scanner input) {
         this.server = server;
@@ -43,7 +44,7 @@ public class ChessClient {
         }
     }
 
-    private void postLoginLoop() {
+    private void postloginLoop() {
         System.out.print("[" + currentUser.username() + "] [postLogin] >>> ");
         String command = readLine();
         if (command == null) { running = false; return; }
@@ -108,6 +109,52 @@ public class ChessClient {
         }
     }
 
+    private void listGames() {
+        try {
+            displayedGames = server.listGames(currentUser.authToken());
+            if (displayedGames.isEmpty()) {
+                System.out.println("There are no games yet. Use 'create' to make one.");
+                return;
+            }
+            System.out.println("Games:");
+            for (int i = 0; i < displayedGames.size(); i++) {
+                ServerFacade.GameInfo game = displayedGames.get(i);
+                String white = game.whiteUsername() == null ? "(open)" : game.whiteUsername();
+                String black = game.blackUsername() == null ? "(open)" : game.blackUsername();
+                System.out.printf("%d. %s | White: %s | Black: %s%n", i + 1, game.gameName(), white, black);
+            }
+        } catch (ServerFacadeException ex) {
+            System.out.println(ex.getMessage());
+        }
+    }
+
+    private void playGame() {
+        ServerFacade.GameInfo game = chooseGame();
+        if (game == null) return;
+        String colorInput = prompt("Play as White or Black? ");
+        if (colorInput == null) {running = false; return; }
+        String color = colorInput.trim().toUpperCase();
+        if (!color.equals("WHITE") && !color.equals("BLACK")) {
+            System.out.println("You have to pick either black or white, red is for checkers");
+            return;
+        }
+        try {
+            server.joinGame(currentUser.authToken(), color, game.gameID());
+            System.out.println("You joined '" + game.gameName() + "' as " + color + ".");
+            boardPrinter.print(new ChessGame(), ChessGame.TeamColor.valueOf(color));
+            System.out.println("Gameplay awaiting implementation");
+        } catch (ServerFacadeException | IllegalArgumentException ex) {
+            System.out.println(ex.getMessage());
+        }
+    }
+
+    private void observeGame() {
+        ServerFacade.GameInfo game = chooseGame();
+        if (game == null) return;
+        System.out.println("Observing '" + game.gameName() + "'.");
+        boardPrinter.print(new ChessGame(), ChessGame.TeamColor.WHITE);
+        System.out.println("Full observer function awaiting implementation");
+    }
     private String prompt(String message) {
         System.out.print(message);
         return readLine();
@@ -134,5 +181,25 @@ public class ChessClient {
         System.out.println(" observe  - View a game's initial board");
         System.out.println(" logout   - Log out and return to start");
         System.out.println(" quite    - Exit the chess client");
+    }
+
+    private ServerFacade.GameInfo chooseGame() {
+        if (displayedGames.isEmpty()) {
+            System.out.println("Use 'list' first so you can choose a game by number");
+            return null;
+        }
+        String selection = prompt("Game number: ");
+        if (selection == null) { running = false; return null; }
+        try {
+            int number = Integer.parseInt(selection.trim());
+            if (number < 1 || number > displayedGames.size()) {
+                System.out.println("You must choose a number from 1 to " + displayedGames.size() + ".");
+                return null;
+            }
+            return displayedGames.get(number - 1);
+        } catch (NumberFormatException ex) {
+            System.out.println("Please enter a whole number from the list");
+            return null;
+        }
     }
 }
