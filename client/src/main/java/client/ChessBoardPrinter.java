@@ -38,7 +38,7 @@ public class ChessBoardPrinter {
 
     public void print(ChessGame game, ChessGame.TeamColor perspective) {
         if (game == null || perspective == null) {
-            throw new IllegalArgumentException("A game and perspective are required")''
+            throw new IllegalArgumentException("A game and perspective are required");
         }
         ChessBoard board = game.getBoard();
         boolean blackPerspective = perspective == ChessGame.TeamColor.BLACK;

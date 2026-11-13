@@ -44,7 +44,7 @@ public class ServerFacade {
     }
 
     public void logout(String authToken) throws ServerFacadeException {
-        return send("DELETE", "/session", requireText(authToken, "Authentication"), null, EmptyResult.class);
+        send("DELETE", "/session", requireText(authToken, "Authentication"), null, EmptyResult.class);
     }
 
     public List<GameInfo> listGames(String authToken) throws ServerFacadeException {
@@ -56,7 +56,7 @@ public class ServerFacade {
         return result.games();
     }
 
-    public void joinGame(String authToken, String gameName) throws ServerFacadeException {
+    public void joinGame(String authToken, String playerColor, int gameID) throws ServerFacadeException {
         requireText(authToken, "Authentication");
         if (gameID <= 0) {
             throw new IllegalArgumentException("Game number must be positive");
@@ -71,7 +71,7 @@ public class ServerFacade {
     }
 
     public int createGame(String authToken, String gameName) throws ServerFacadeException {
-        CreateGameResult result = send("POST", "/game", requireText(authToken, "Authentication"), Map.of(
+        send("POST", "/game", requireText(authToken, "Authentication"), Map.of(
                 "gameName", requireText(gameName, "Game name")),
                 CreateGameResult.class);
         if (result == null || result.gameID() <= 0) {
@@ -108,8 +108,8 @@ public class ServerFacade {
                     builder.header("authorization", authToken);
                 }
                 if (body != null) {
-                    builder.header("Content-Type", "application/json").build()
-                            .method(method, HttpRequest.BodyPublisher.ofString(gson.toJson(body)));
+                    builder.header("Content-Type", "application/json");
+                    builder.method(method, HttpRequest.BodyPublishers.ofString(gson.toJson(body)));
                 } else {
                     builder.method(method, HttpRequest.BodyPublishers.noBody());
                 }
@@ -136,5 +136,17 @@ public class ServerFacade {
                 } catch (JsonParseException ex) {
                     throw new ServerFacadeException("The server returned an unexpected response.", ex);
                 }
+    }
+
+    private String errorMessage(HttpResponse<String> response) {
+        try {
+            JsonObject error = gson.fromJson(response.body(), JsonObject.class);
+            if (error != null && error.has("message")) {
+                return error.get("message").getAsString();
+            }
+        } catch (JsonParseException ignored) {
+
+        }
+        return "Server request failed with status " + response.statusCode();
     }
  }
