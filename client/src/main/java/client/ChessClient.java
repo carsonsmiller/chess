@@ -34,9 +34,9 @@ public class ChessClient {
         System.out.print("[prelogin] >>> ");
         String command = readLine();
         if (command == null) { running = false; return; }
-        switch (command.trim().toLowerCase()) {
+        switch (command.trim().toLowerCase(Locale.ROOT)) {
             case "help" -> printPreloginHelp();
-            case "quite", "exit" -> running = false;
+            case "quit", "exit" -> running = false;
             case "login" -> login();
             case "register" -> register();
             case "" -> { }
@@ -48,12 +48,12 @@ public class ChessClient {
         System.out.print("[" + currentUser.username() + "] [postLogin] >>> ");
         String command = readLine();
         if (command == null) { running = false; return; }
-        switch (command.trim().toLowerCase()) {
+        switch (command.trim().toLowerCase(Locale.ROOT)) {
             case "help" -> printPostloginHelp();
             case "logout" -> logout();
             case "create", "create game" -> createGame();
             case "list", "list games" -> listGames();
-            case "play", "play game" -> playGame();
+            case "play", "play game", "join", "join game" -> playGame();
             case "observe", "observe game" -> observeGame();
             case "quit", "exit" -> running = false;
             case "" -> { }
@@ -103,7 +103,7 @@ public class ChessClient {
         if (gameName == null) { running = false; return; }
         try {
             server.createGame(currentUser.authToken(), gameName);
-            System.out.println("Game crated. Use 'list' to see it and choose whether to play or observer.");
+            System.out.println("Game created. Use 'list' to see it and choose whether to play or observe.");
         } catch (ServerFacadeException | IllegalArgumentException ex) {
             System.out.println(ex.getMessage());
         }
@@ -124,6 +124,7 @@ public class ChessClient {
                 System.out.printf("%d. %s | White: %s | Black: %s%n", i + 1, game.gameName(), white, black);
             }
         } catch (ServerFacadeException ex) {
+            displayedGames.clear();
             System.out.println(ex.getMessage());
         }
     }
@@ -133,7 +134,7 @@ public class ChessClient {
         if (game == null) return;
         String colorInput = prompt("Play as White or Black? ");
         if (colorInput == null) {running = false; return; }
-        String color = colorInput.trim().toUpperCase();
+        String color = colorInput.trim().toUpperCase(Locale.ROOT);
         if (!color.equals("WHITE") && !color.equals("BLACK")) {
             System.out.println("You have to pick either black or white, red is for checkers");
             return;
@@ -175,12 +176,12 @@ public class ChessClient {
     private void printPostloginHelp() {
         System.out.println("Available commands:");
         System.out.println(" help     - Show this help menu");
-        System.out.println(" craete   - Create a game");
+        System.out.println(" create   - Create a game");
         System.out.println(" list     - list games and their players");
-        System.out.println(" play     - Join a game as White or Black");
+        System.out.println(" join     - Join a game as White or Black");
         System.out.println(" observe  - View a game's initial board");
         System.out.println(" logout   - Log out and return to start");
-        System.out.println(" quite    - Exit the chess client");
+        System.out.println(" quit    - Exit the chess client");
     }
 
     private ServerFacade.GameInfo chooseGame() {

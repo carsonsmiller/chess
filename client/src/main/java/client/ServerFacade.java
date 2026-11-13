@@ -141,7 +141,8 @@ public class ServerFacade {
     private String errorMessage(HttpResponse<String> response) {
         try {
             JsonObject error = gson.fromJson(response.body(), JsonObject.class);
-            if (error != null && error.has("message")) {
+            if (error != null && error.has("message")
+                && !error.get("message").isJsonNull()) {
                 return error.get("message").getAsString();
             }
         } catch (JsonParseException ignored) {

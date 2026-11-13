@@ -14,27 +14,31 @@ import model.AuthData;
 public class ServerFacadeTests {
 
     private static Server server;
+    private static int port;
     private ServerFacade facade;
 
     @BeforeAll
     public static void init() {
         server = new Server();
-        int port = server.run(0);
+        port = server.run(0);
         System.out.println("Started test HTTP server on " + port);
     }
 
     @AfterAll
     static void stopServer() {
-        server.stop();
+        if (server != null) {
+            server.stop();
+        }
     }
 
     @BeforeEach
     void clearDatabase() throws ServerFacadeException {
+        facade = new ServerFacade(port);
         facade.clearDatabase();
     }
 
     @Test
-    void conctructorAcceptsDynamicPort() {Assertions.assertNotNull(facade); }
+    void constructorAcceptsDynamicPort() {Assertions.assertNotNull(facade); }
 
     @Test
     void constructorRejectsInvalidPort() {
@@ -43,7 +47,7 @@ public class ServerFacadeTests {
     }
 
     @Test
-    void requestToUnvailableServerFailsWithFriendlyException() throws Exception {
+    void requestToUnavailableServerFailsWithFriendlyException() throws Exception {
         int unusedPort;
         try (ServerSocket socket = new ServerSocket(0)) {
             unusedPort = socket.getLocalPort();
@@ -171,7 +175,7 @@ public class ServerFacadeTests {
         AuthData auth = registerUser();
         int gameID = facade.createGame(auth.authToken(), "White test");
         facade.joinGame(auth.authToken(), "WHITE", gameID);
-        Assertions.assertEquals("player", facade.listGames(auth.authToken()).get(0).whiteUsername());
+        Assertions.assertEquals(auth.username(), facade.listGames(auth.authToken()).get(0).whiteUsername());
 
     }
 
@@ -180,7 +184,7 @@ public class ServerFacadeTests {
         AuthData auth = registerUser();
         int gameID = facade.createGame(auth.authToken(), "Black test");
         facade.joinGame(auth.authToken(), "BLACK", gameID);
-        Assertions.assertEquals("player", facade.listGames(auth.authToken()).get(0).blackUsername());
+        Assertions.assertEquals(auth.username(), facade.listGames(auth.authToken()).get(0).blackUsername());
 
     }
 
