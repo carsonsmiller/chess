@@ -24,8 +24,8 @@ public class ChessClient {
     public void run() {
         System.out.println("Welcome to the Chess Client");
         while (running) {
-            if (currentUser == null) preloginLoop();
-            else postloginLoop();
+            if (currentUser == null) { preloginLoop(); }
+            else { postloginLoop(); }
         }
         System.out.println("See ya next time!");
     }
@@ -131,7 +131,7 @@ public class ChessClient {
 
     private void playGame() {
         ServerFacade.GameInfo game = chooseGame();
-        if (game == null) return;
+        if (game == null) { return; }
         String colorInput = prompt("Play as White or Black? ");
         if (colorInput == null) {running = false; return; }
         String color = colorInput.trim().toUpperCase(Locale.ROOT);
@@ -151,7 +151,7 @@ public class ChessClient {
 
     private void observeGame() {
         ServerFacade.GameInfo game = chooseGame();
-        if (game == null) return;
+        if (game == null) { return; }
         System.out.println("Observing '" + game.gameName() + "'.");
         boardPrinter.print(new ChessGame(), ChessGame.TeamColor.WHITE);
         System.out.println("Full observer function awaiting implementation");

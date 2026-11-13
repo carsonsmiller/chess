@@ -12,7 +12,7 @@ public class ChessBoardPrinter {
     private static final String RESET = EscapeSequences.RESET_BG_COLOR;
 
     private String pieceSymbol(ChessPiece piece) {
-        if (piece == null) return "   ";
+        if (piece == null) { return "   " };
         String foreground = piece.getTeamColor() == ChessGame.TeamColor.WHITE
                 ? EscapeSequences.SET_TEXT_COLOR_RED : EscapeSequences.SET_TEXT_COLOR_BLUE;
         String symbol = switch (piece.getTeamColor()) {
